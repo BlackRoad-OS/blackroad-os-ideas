@@ -1,35 +1,26 @@
 # blackroad-os-ideas
 
-Central idea + experiment backlog for BlackRoad OS. Capture every concept, question, and experiment as an issue.
+blackroad-os-ideas is the structured incubator for every idea powering BlackRoad OS — from small feature sparks to new agent pods and future research directions.
 
-## How It Works
+## What Lives Here
+- **/ideas/raw** – brain dumps, voice transcripts, screenshots, and unfiltered sparks.
+- **/ideas/concepts** – single-page Concept Cards capturing the refined version of a raw idea.
+- **/ideas/proposals** – structured specs with goals, risks, and flows.
+- **/rfc** – formal cross-repo approval docs when changes touch operator/core/infra/compliance.
+- **/roadmap** – quarterly plans reflecting what shipped and what is coming.
+- **/templates** – source-of-truth templates for ideas, concepts, agent proposals, and RFCs.
+- **/process** – lifecycle rules, prioritization rubric, and convergence path to shipping.
+- **/registry** – machine-readable indices of ideas, concepts, and RFCs.
+- **/docs** – guidance for contributors and agents on how to propose and ship ideas.
 
-**New thought → new issue.**
+## Idea Pipeline
+```
+Raw Idea → Concept Card → Proposal → RFC → Operator Implementation → Release
+```
 
-When you have an idea, experiment, or question, create a new issue using one of the templates:
-- **Idea**: A new concept or proposal
-- **Experiment**: A hypothesis to test or explore
-- **Question**: Something you want to understand better
-
-## Labels
-
-Use labels to organize and categorize issues:
-
-### Type Labels
-- `type:idea` - New ideas and concepts
-- `type:experiment` - Experiments and explorations
-- `type:question` - Questions seeking answers
-
-### Domain Labels
-- `domain:infra` - Infrastructure and technical architecture
-- `domain:brand` - Branding, identity, and positioning
-- `domain:theory` - Theoretical foundations and concepts
-- *(Add more domain labels as needed)*
-
-## Getting Started
-
-1. Click "New Issue"
-2. Choose a template (Idea, Experiment, or Question)
-3. Fill in the details
-4. Add appropriate labels (type and domain)
-5. Submit and discuss!
+## How to Use
+1. Capture unfiltered thoughts in `/ideas/raw/` using the idea template.
+2. Promote promising threads into Concept Cards under `/ideas/concepts/`.
+3. Expand into proposals and RFCs when cross-system change is needed.
+4. Track status in the registry JSON files and align roadmap entries with real artifacts.
+5. Link out to operator implementations and other repos once work is underway.
