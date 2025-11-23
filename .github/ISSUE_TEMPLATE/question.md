@@ -1,9 +1,10 @@
 ---
 name: Question
 about: Ask a question or seek clarity on a topic
-title: '[QUESTION] '
-labels: 'type:question'
+title: "[QUESTION] "
+labels: ''
 assignees: ''
+
 ---
 
 ## Question

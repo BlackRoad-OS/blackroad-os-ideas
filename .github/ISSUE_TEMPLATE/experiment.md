@@ -1,9 +1,10 @@
 ---
 name: Experiment
 about: Propose an experiment to test a hypothesis or explore a concept
-title: '[EXPERIMENT] '
-labels: 'type:experiment'
+title: "[EXPERIMENT] "
+labels: ''
 assignees: ''
+
 ---
 
 ## Hypothesis

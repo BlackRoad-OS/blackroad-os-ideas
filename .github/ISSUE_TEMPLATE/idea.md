@@ -1,9 +1,10 @@
 ---
 name: Idea
 about: Capture a new idea or concept for BlackRoad OS
-title: '[IDEA] '
-labels: 'type:idea'
+title: "[IDEA] "
+labels: ''
 assignees: ''
+
 ---
 
 ## Summary
