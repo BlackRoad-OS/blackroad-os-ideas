@@ -1,0 +1,174 @@
+---
+import TagPill from '../components/TagPill.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+import { getIdeas } from '../lib/ideas';
+
+const ideas = await getIdeas();
+const tags = Array.from(new Set(ideas.flatMap((idea) => idea.tags))).sort();
+const statuses = Array.from(new Set(ideas.map((idea) => idea.status)));
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlackRoad OS · Ideas</title>
+    <style>
+      body {
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        background: #0f172a;
+        color: #0b172a;
+        margin: 0;
+      }
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 4rem;
+      }
+      header {
+        color: #e2e8f0;
+      }
+      .panel {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.15);
+      }
+      .idea-grid {
+        display: grid;
+        gap: 1rem;
+      }
+      .idea-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        background: #fff;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+      }
+      .idea-card:hover {
+        border-color: #a5b4fc;
+        transform: translateY(-2px);
+      }
+      .filter-bar {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 0.75rem 0 1rem;
+      }
+      .tag-rail {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .search-box {
+        flex: 1 1 280px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        padding: 0.6rem 0.9rem;
+      }
+      .muted {
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <main>
+        <p class="muted">BLACKROAD OS · IDEA BACKLOG</p>
+        <h1 style="margin: 0">Ideas Backlog</h1>
+        <p class="muted">
+          Markdown-driven backlog with tags, status filters, and a lightweight search UI powered by Ideas-Gen-0.
+        </p>
+        <p class="muted"><!-- TODO(ideas-next): Embed voting widget and roadmap export triggers. --></p>
+      </main>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="filter-bar">
+          <input id="search" class="search-box" type="search" placeholder="Search ideas" />
+          <select id="status-filter" aria-label="Filter by status">
+            <option value="">All status</option>
+            {statuses.map((status) => (
+              <option value={status}>{status}</option>
+            ))}
+          </select>
+        </div>
+        <div class="tag-rail" id="tag-filter">
+          {tags.map((tag) => (
+            <TagPill label={tag} />
+          ))}
+        </div>
+      </section>
+
+      <section class="idea-grid" id="idea-grid">
+        {ideas.map((idea) => (
+          <article
+            class="idea-card"
+            data-idea-card
+            data-tags={idea.tags.join(',')}
+            data-status={idea.status}
+            data-title={`${idea.title.toLowerCase()} ${idea.content.toLowerCase()}`}
+          >
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem">
+              <a href={`/idea/${idea.slug}/`} style="font-weight: 700; color: #111827; text-decoration: none">
+                {idea.title}
+              </a>
+              <StatusBadge status={idea.status} />
+            </div>
+            <p class="muted" style="margin: 0.4rem 0 0.75rem">ETA: {idea.eta}</p>
+            <div class="tag-rail">
+              {idea.tags.map((tag) => (
+                <TagPill label={tag} selected />
+              ))}
+            </div>
+          </article>
+        ))}
+      </section>
+    </main>
+
+    <script>
+      const grid = document.getElementById('idea-grid');
+      const search = document.getElementById('search');
+      const tagRail = document.getElementById('tag-filter');
+      const statusFilter = document.getElementById('status-filter');
+      const activeTags = new Set();
+
+      function applyFilters() {
+        const term = (search?.value || '').toLowerCase();
+        const status = statusFilter?.value || '';
+
+        grid?.querySelectorAll('[data-idea-card]').forEach((card) => {
+          const title = card.getAttribute('data-title') || '';
+          const cardStatus = card.getAttribute('data-status') || '';
+          const cardTags = (card.getAttribute('data-tags') || '').split(',').filter(Boolean);
+
+          const matchesSearch = !term || title.includes(term);
+          const matchesStatus = !status || status === cardStatus;
+          const matchesTags = activeTags.size === 0 || cardTags.some((tag) => activeTags.has(tag));
+
+          const visible = matchesSearch && matchesStatus && matchesTags;
+          card.style.display = visible ? 'block' : 'none';
+        });
+      }
+
+      tagRail?.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const value = target.getAttribute('data-value');
+        if (!value) return;
+        if (activeTags.has(value)) {
+          activeTags.delete(value);
+          target.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+        } else {
+          activeTags.add(value);
+          target.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+        }
+        applyFilters();
+      });
+
+      search?.addEventListener('input', applyFilters);
+      statusFilter?.addEventListener('change', applyFilters);
+    </script>
+  </body>
+</html>

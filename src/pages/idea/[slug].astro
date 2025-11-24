@@ -1,0 +1,75 @@
+---
+import StatusBadge from '../../components/StatusBadge.astro';
+import TagPill from '../../components/TagPill.astro';
+import { getIdeaBySlug, getIdeas } from '../../lib/ideas';
+
+export async function getStaticPaths() {
+  const ideas = await getIdeas();
+  return ideas.map((idea) => ({ params: { slug: idea.slug } }));
+}
+
+const { slug } = Astro.params;
+const idea = slug ? await getIdeaBySlug(slug) : undefined;
+
+if (!idea) {
+  throw new Error(`Idea not found: ${slug}`);
+}
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{idea.title} · BlackRoad Ideas</title>
+    <style>
+      body {
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        background: #0f172a;
+        color: #0f172a;
+        margin: 0;
+      }
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 4rem;
+      }
+      a {
+        color: #4f46e5;
+      }
+      article {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.75rem;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.15);
+      }
+      .muted {
+        color: #64748b;
+      }
+      .tag-rail {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin: 0.75rem 0 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="muted"><a href="/">← Back to ideas</a></p>
+      <article>
+        <div style="display: flex; align-items: center; gap: 0.75rem; justify-content: space-between">
+          <h1 style="margin: 0">{idea.title}</h1>
+          <StatusBadge status={idea.status} />
+        </div>
+        <p class="muted" style="margin-top: 0.25rem">ETA: {idea.eta}</p>
+        <div class="tag-rail">
+          {idea.tags.map((tag) => (
+            <TagPill label={tag} selected />
+          ))}
+        </div>
+        <section style="margin-top: 1rem; line-height: 1.65">
+          <astro:markdown>{idea.content}</astro:markdown>
+        </section>
+      </article>
+    </main>
+  </body>
+</html>

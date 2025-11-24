@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "work", "scaffold/ideas-gen-0"]
+  pull_request:
+    branches: ["main", "work", "scaffold/ideas-gen-0"]
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint markdown
+        run: pnpm lint:md
+
+      - name: Validate idea sync inputs
+        run: pnpm sync:test
+
+      - name: Build site
+        run: pnpm build

@@ -1,26 +1,51 @@
-# blackroad-os-ideas
+# BlackRoad OS · Ideas Backlog
 
-blackroad-os-ideas is the structured incubator for every idea powering BlackRoad OS — from small feature sparks to new agent pods and future research directions.
+Ideas-Gen-0 scaffold for a Markdown-driven idea + experiment backlog. Ideas
+live in `/ideas/*.md` and flow into GitHub issues and a lightweight Astro
+viewer.
 
-## What Lives Here
-- **/ideas/raw** – brain dumps, voice transcripts, screenshots, and unfiltered sparks.
-- **/ideas/concepts** – single-page Concept Cards capturing the refined version of a raw idea.
-- **/ideas/proposals** – structured specs with goals, risks, and flows.
-- **/rfc** – formal cross-repo approval docs when changes touch operator/core/infra/compliance.
-- **/roadmap** – quarterly plans reflecting what shipped and what is coming.
-- **/templates** – source-of-truth templates for ideas, concepts, agent proposals, and RFCs.
-- **/process** – lifecycle rules, prioritization rubric, and convergence path to shipping.
-- **/registry** – machine-readable indices of ideas, concepts, and RFCs.
-- **/docs** – guidance for contributors and agents on how to propose and ship ideas.
+## Layout
 
-## Idea Pipeline
+- `/ideas` — backlog entries with front matter (`title, tags, status, eta`).
+- `/src/pages` — Astro pages for the list and detail views.
+- `/src/components` — tag and status UI components.
+- `/src/lib/ideas.ts` — front-matter reader and parser.
+- `/scripts` — build beacon + sync validation helpers.
+- `/.github/workflows` — CI and issue sync.
+
+## Front Matter
+
+```md
+---
+title: Spiral Information Geometry Core
+tags: [math, sig]
+status: draft
+eta: 2026-Q1
+---
+Short abstract…
 ```
-Raw Idea → Concept Card → Proposal → RFC → Operator Implementation → Release
+
+## Quickstart
+
+```bash
+pnpm install
+pnpm dev            # http://localhost:4321
+pnpm build          # static viewer to /dist
 ```
 
-## How to Use
-1. Capture unfiltered thoughts in `/ideas/raw/` using the idea template.
-2. Promote promising threads into Concept Cards under `/ideas/concepts/`.
-3. Expand into proposals and RFCs when cross-system change is needed.
-4. Track status in the registry JSON files and align roadmap entries with real artifacts.
-5. Link out to operator implementations and other repos once work is underway.
+## Sync GitHub Issues
+
+On push, `.github/workflows/sync.yml` upserts issues titled `Idea: <title>`
+with label `idea`. To run manually:
+
+```bash
+gh workflow run sync.yml
+```
+
+## Notes
+
+- `scripts/postbuild.mjs` refreshes `public/sig.beacon.json` with `{ts, agent:
+  'Ideas-Gen-0'}`.
+- Markdownlint + Prettier keep docs tidy.
+- `<!-- TODO(ideas-next): ... -->` markers flag obvious extensions (voting
+  widgets, roadmap exports, richer metadata).

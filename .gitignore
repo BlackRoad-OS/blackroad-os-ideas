@@ -1,4 +1,8 @@
 node_modules
-.next
+.pnpm-store
+.astro
+dist
 out
+.next
 .DS_Store
+.env

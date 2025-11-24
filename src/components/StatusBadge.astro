@@ -1,0 +1,13 @@
+---
+const { status } = Astro.props as { status: string };
+
+const palette: Record<string, string> = {
+  draft: 'bg-amber-100 text-amber-800 border-amber-200',
+  active: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  parked: 'bg-slate-100 text-slate-800 border-slate-200',
+};
+---
+<span class={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold ${palette[status] ?? palette.draft}`}>
+  <span class="h-2 w-2 rounded-full bg-current"></span>
+  {status}
+</span>

@@ -3,17 +3,25 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "export": "next export",
-    "start": "serve out -p $PORT -l 0.0.0.0"
+    "dev": "astro dev",
+    "build": "astro build && node scripts/postbuild.mjs",
+    "preview": "astro preview",
+    "lint": "pnpm lint:md",
+    "lint:md": "markdownlint README.md ideas/*.md",
+    "format": "prettier --write \"**/*.{md,astro,ts,js,json}\"",
+    "sync:test": "node scripts/sync-check.mjs",
+    "ci": "pnpm lint && pnpm sync:test && pnpm build"
   },
   "dependencies": {
-    "next": "14.2.5",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "astro": "^4.12.2",
+    "gray-matter": "^4.0.3"
   },
   "devDependencies": {
-    "serve": "^14.2.0"
-  }
+    "@types/node": "^22.0.0",
+    "markdownlint-cli": "^0.41.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-astro": "^0.14.0",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@10.11.0"
 }
