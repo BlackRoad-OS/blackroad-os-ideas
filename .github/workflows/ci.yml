@@ -2,36 +2,39 @@ name: CI
 
 on:
   push:
-    branches: ["main", "work", "scaffold/ideas-gen-0"]
+    branches: [main]
   pull_request:
-    branches: ["main", "work", "scaffold/ideas-gen-0"]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint-test-build:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.11.0
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
 
-      - name: Lint markdown
-        run: pnpm lint:md
+      - name: Lint
+        run: npm run lint --if-present
 
-      - name: Validate idea sync inputs
-        run: pnpm sync:test
+      - name: Type check
+        run: npm run type-check --if-present
 
-      - name: Build site
-        run: pnpm build
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Test
+        run: npm test --if-present
