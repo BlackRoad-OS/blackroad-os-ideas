@@ -1,51 +1,23 @@
-# BlackRoad OS · Ideas Backlog
+# ⚠️ DEPRECATED - This repository has been archived
 
-Ideas-Gen-0 scaffold for a Markdown-driven idea + experiment backlog. Ideas
-live in `/ideas/*.md` and flow into GitHub issues and a lightweight Astro
-viewer.
+> **This repository is deprecated and read-only.**
+> 
+> All content has been migrated to the canonical BlackRoad OS docs repository.
 
-## Layout
+## Migration Target
 
-- `/ideas` — backlog entries with front matter (`title, tags, status, eta`).
-- `/src/pages` — Astro pages for the list and detail views.
-- `/src/components` — tag and status UI components.
-- `/src/lib/ideas.ts` — front-matter reader and parser.
-- `/scripts` — build beacon + sync validation helpers.
-- `/.github/workflows` — CI and issue sync.
+| Source | Target | PR |
+|--------|--------|-----|
+| `roadmap/`, `rfc/`, `ideas/` | [blackroad-os-docs](https://github.com/BlackRoad-OS/blackroad-os-docs) | [#57](https://github.com/BlackRoad-OS/blackroad-os-docs/pull/57) |
 
-## Front Matter
+## New Location
 
-```md
+- **Roadmaps**: `blackroad-os-docs/docs/roadmap/`
+- **RFCs**: `blackroad-os-docs/docs/rfc/`
+- **Ideas**: `blackroad-os-docs/docs/ideas/`
+
 ---
-title: Spiral Information Geometry Core
-tags: [math, sig]
-status: draft
-eta: 2026-Q1
----
-Short abstract…
-```
 
-## Quickstart
+**Do not create new issues or PRs here. Use the canonical repository above.**
 
-```bash
-pnpm install
-pnpm dev            # http://localhost:4321
-pnpm build          # static viewer to /dist
-```
-
-## Sync GitHub Issues
-
-On push, `.github/workflows/sync.yml` upserts issues titled `Idea: <title>`
-with label `idea`. To run manually:
-
-```bash
-gh workflow run sync.yml
-```
-
-## Notes
-
-- `scripts/postbuild.mjs` refreshes `public/sig.beacon.json` with `{ts, agent:
-  'Ideas-Gen-0'}`.
-- Markdownlint + Prettier keep docs tidy.
-- `<!-- TODO(ideas-next): ... -->` markers flag obvious extensions (voting
-  widgets, roadmap exports, richer metadata).
+🖤 BlackRoad OS Consolidation - Phase 1
