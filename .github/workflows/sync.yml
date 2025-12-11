@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@f43a3398dc5d8737c2dbc7bf8ad6b50918d7a3d4
 
       - name: Sync idea issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@7b7e1c9e6e8b2e1e6b2a4c2e2e2e2e2e2e2e2e2e
         with:
           script: |
             const fs = require('fs');
