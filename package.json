@@ -13,7 +13,7 @@
     "ci": "pnpm lint && pnpm sync:test && pnpm build"
   },
   "dependencies": {
-    "astro": "^5.15.9",
+    "astro": "^5.18.0",
     "gray-matter": "^4.0.3"
   },
   "devDependencies": {
