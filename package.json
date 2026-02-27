@@ -17,7 +17,7 @@
     "gray-matter": "^4.0.3"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.19.13",
     "eslint": "^9.39.2",
     "markdownlint-cli": "^0.47.0",
     "prettier": "^3.3.3",
