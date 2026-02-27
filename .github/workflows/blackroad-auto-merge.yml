@@ -103,15 +103,11 @@ jobs:
           echo "🤖 Merging PR #$PR_NUMBER..."
 
           # Merge with squash and delete branch
+          MERGE_BODY=$'✅ Auto-merged by BlackRoad Auto-Merge System\n\nThis PR passed all compliance checks and was automatically merged.\n\n🤖 Automated by BlackRoad Auto-Merge\n© 2025-2026 BlackRoad OS, Inc.'
           gh pr merge "$PR_NUMBER" \
             --squash \
             --delete-branch \
-            --body "✅ Auto-merged by BlackRoad Auto-Merge System
-
-This PR passed all compliance checks and was automatically merged.
-
-🤖 Automated by BlackRoad Auto-Merge
-© 2025-2026 BlackRoad OS, Inc."
+            --body "$MERGE_BODY"
 
           echo "✅ PR #$PR_NUMBER merged successfully!"
 
@@ -122,19 +118,8 @@ This PR passed all compliance checks and was automatically merged.
         run: |
           PR_NUMBER="${{ steps.pr.outputs.number }}"
 
-          gh pr comment "$PR_NUMBER" --body "🤖 **Auto-Merge Successful**
-
-This PR has been automatically merged because:
-- ✅ Created by BlackRoad auto-fix bot
-- ✅ All compliance checks passed
-- ✅ No merge conflicts
-- ✅ No manual review required
-
-The changes are now live on the default branch.
-
----
-🤖 Automated by BlackRoad Auto-Merge System
-© 2025-2026 BlackRoad OS, Inc." || true
+          COMMENT_BODY=$'🤖 **Auto-Merge Successful**\n\nThis PR has been automatically merged because:\n- ✅ Created by BlackRoad auto-fix bot\n- ✅ All compliance checks passed\n- ✅ No merge conflicts\n- ✅ No manual review required\n\nThe changes are now live on the default branch.\n\n---\n🤖 Automated by BlackRoad Auto-Merge System\n© 2025-2026 BlackRoad OS, Inc.'
+          gh pr comment "$PR_NUMBER" --body "$COMMENT_BODY" || true
 
       - name: 📝 Create Issue on Validation Failure
         if: |
@@ -149,28 +134,14 @@ The changes are now live on the default branch.
 
           gh issue create \
             --title "⚠️  Auto-Fix PR Requires Manual Review: #$PR_NUMBER" \
-            --body "## Auto-Fix PR Could Not Be Auto-Merged
-
-**PR:** #$PR_NUMBER
-**Status:** Manual review needed ⚠️
-**Reason:** Checks failed or merge conflicts detected
-
-### Details:
-The auto-fix PR did not pass automatic validation.
-
-**Branch:** \`${{ steps.pr.outputs.branch }}\`
-**Mergeable:** \`${{ steps.pr.outputs.mergeable }}\`
-**Merge State:** \`${{ steps.pr.outputs.merge_state }}\`
-**Check Status:** \`${{ steps.pr.outputs.status }}\`
-
-### Action Required:
-Please review the PR manually and resolve any issues.
-
-**PR Link:** https://github.com/$REPO/pull/$PR_NUMBER
-
----
-🤖 Automated Alert from BlackRoad Auto-Merge System
-© 2025-2026 BlackRoad OS, Inc." \
+            --body "$(printf '## Auto-Fix PR Could Not Be Auto-Merged\n\n**PR:** #%s\n**Status:** Manual review needed ⚠️\n**Reason:** Checks failed or merge conflicts detected\n\n### Details:\nThe auto-fix PR did not pass automatic validation.\n\n**Branch:** `%s`\n**Mergeable:** `%s`\n**Merge State:** `%s`\n**Check Status:** `%s`\n\n### Action Required:\nPlease review the PR manually and resolve any issues.\n\n**PR Link:** https://github.com/%s/pull/%s\n\n---\n🤖 Automated Alert from BlackRoad Auto-Merge System\n© 2025-2026 BlackRoad OS, Inc.' \
+              "$PR_NUMBER" \
+              "${{ steps.pr.outputs.branch }}" \
+              "${{ steps.pr.outputs.mergeable }}" \
+              "${{ steps.pr.outputs.merge_state }}" \
+              "${{ steps.pr.outputs.status }}" \
+              "$REPO" \
+              "$PR_NUMBER")" \
             --label "auto-fix-failed,needs-review" || true
 
       - name: 🚨 Notify on Critical Failure
