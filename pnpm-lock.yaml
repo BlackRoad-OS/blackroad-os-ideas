@@ -10,14 +10,14 @@ importers:
     dependencies:
       astro:
         specifier: ^5.18.0
-        version: 5.18.0(@types/node@22.19.11)(rollup@4.59.0)(typescript@5.9.3)
+        version: 5.18.0(@types/node@22.19.13)(rollup@4.59.0)(typescript@5.9.3)
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
     devDependencies:
       '@types/node':
-        specifier: ^22.0.0
-        version: 22.19.11
+        specifier: ^22.19.13
+        version: 22.19.13
       eslint:
         specifier: ^9.39.2
         version: 9.39.3
@@ -768,8 +768,8 @@ packages:
   '@types/nlcst@2.0.3':
     resolution: {integrity: sha512-vSYNSDe6Ix3q+6Z7ri9lyWqgGhJTmzRjZRqyq15N0Z/1/UnVsno9G/N40NBijoYx2seFDIl0+B2mgAb9mezUCA==}
 
-  '@types/node@22.19.11':
-    resolution: {integrity: sha512-BH7YwL6rA93ReqeQS1c4bsPpcfOmJasG+Fkr6Y59q83f9M1WcBRHR2vM+P9eOisYRcN3ujQoiZY8uk5W+1WL8w==}
+  '@types/node@22.19.13':
+    resolution: {integrity: sha512-akNQMv0wW5uyRpD2v2IEyRSZiR+BeGuoB6L310EgGObO44HSMNT8z1xzio28V8qOrgYaopIDNA18YgdXd+qTiw==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -2677,7 +2677,7 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
-  '@types/node@22.19.11':
+  '@types/node@22.19.13':
     dependencies:
       undici-types: 6.21.0
 
@@ -2729,7 +2729,7 @@ snapshots:
 
   array-iterate@2.0.1: {}
 
-  astro@5.18.0(@types/node@22.19.11)(rollup@4.59.0)(typescript@5.9.3):
+  astro@5.18.0(@types/node@22.19.13)(rollup@4.59.0)(typescript@5.9.3):
     dependencies:
       '@astrojs/compiler': 2.13.1
       '@astrojs/internal-helpers': 0.7.5
@@ -2786,8 +2786,8 @@ snapshots:
       unist-util-visit: 5.1.0
       unstorage: 1.17.4
       vfile: 6.0.3
-      vite: 6.4.1(@types/node@22.19.11)
-      vitefu: 1.1.2(vite@6.4.1(@types/node@22.19.11))
+      vite: 6.4.1(@types/node@22.19.13)
+      vitefu: 1.1.2(vite@6.4.1(@types/node@22.19.13))
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.3
@@ -4362,7 +4362,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite@6.4.1(@types/node@22.19.11):
+  vite@6.4.1(@types/node@22.19.13):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.3)
@@ -4371,12 +4371,12 @@ snapshots:
       rollup: 4.59.0
       tinyglobby: 0.2.15
     optionalDependencies:
-      '@types/node': 22.19.11
+      '@types/node': 22.19.13
       fsevents: 2.3.3
 
-  vitefu@1.1.2(vite@6.4.1(@types/node@22.19.11)):
+  vitefu@1.1.2(vite@6.4.1(@types/node@22.19.13)):
     optionalDependencies:
-      vite: 6.4.1(@types/node@22.19.11)
+      vite: 6.4.1(@types/node@22.19.13)
 
   web-namespaces@2.0.1: {}
 
