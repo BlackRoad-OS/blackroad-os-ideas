@@ -1,0 +1,188 @@
+name: Copilot Cascade - Multi-Agent PR Review
+
+# Routes pull request reviews through multiple free AI agents in cascade.
+# Cost: $0 — uses GitHub Models API (free with GITHUB_TOKEN) and GitHub Actions.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  models: read
+
+jobs:
+  cascade-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gather PR context
+        id: context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 20
+            });
+
+            const fileSummary = files
+              .map(f => `${f.status}: ${f.filename} (+${f.additions}/-${f.deletions})`)
+              .join('\n');
+
+            core.setOutput('title', pr.title);
+            core.setOutput('body', (pr.body || '').substring(0, 500));
+            core.setOutput('files', fileSummary);
+            core.setOutput('file_count', files.length.toString());
+            core.setOutput('pr_number', pr.number.toString());
+
+      # Agent 1: Fast triage with GPT-4o-mini (free via GitHub Models)
+      - name: Agent 1 - GPT-4o-mini triage
+        id: agent1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="${{ steps.context.outputs.title }}"
+          FILES="${{ steps.context.outputs.files }}"
+          BODY="${{ steps.context.outputs.body }}"
+
+          RESULT=$(curl -sf -X POST \
+            "https://models.inference.ai.azure.com/chat/completions" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg title "$TITLE" \
+              --arg files "$FILES" \
+              --arg body "$BODY" \
+              '{
+                model: "gpt-4o-mini",
+                messages: [
+                  {role: "system", content: "You are a concise PR reviewer. Respond in 3 bullet points max."},
+                  {role: "user", content: ("Review this PR:\nTitle: " + $title + "\nDescription: " + $body + "\nFiles changed:\n" + $files)}
+                ],
+                max_tokens: 300
+              }')" 2>/dev/null || echo "")
+
+          REVIEW=$(echo "$RESULT" | jq -r '.choices[0].message.content // empty' 2>/dev/null || echo "")
+          echo "review<<EOF" >> $GITHUB_OUTPUT
+          echo "${REVIEW}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Agent 2: Security-focused review with Phi-3-mini (free via GitHub Models)
+      - name: Agent 2 - Phi-3-mini security check
+        id: agent2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FILES="${{ steps.context.outputs.files }}"
+
+          RESULT=$(curl -sf -X POST \
+            "https://models.inference.ai.azure.com/chat/completions" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg files "$FILES" \
+              '{
+                model: "Phi-3-mini-4k-instruct",
+                messages: [
+                  {role: "user", content: ("Check for security issues in these changed files. Be brief.\n" + $files)}
+                ],
+                max_tokens: 200
+              }')" 2>/dev/null || echo "")
+
+          REVIEW=$(echo "$RESULT" | jq -r '.choices[0].message.content // empty' 2>/dev/null || echo "")
+          echo "review<<EOF" >> $GITHUB_OUTPUT
+          echo "${REVIEW}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Agent 3: Static analysis (always free, no API needed)
+      - name: Agent 3 - Static analysis
+        id: agent3
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100
+            });
+
+            const insights = [];
+
+            const hasTests = files.some(f => /test|spec/i.test(f.filename));
+            const hasDocs  = files.some(f => f.filename.endsWith('.md'));
+            const secretRe = /api[_-]?key|secret|password|token|credential/i;
+            const bigPR    = files.length > 50;
+
+            if (!hasTests && files.length > 3) insights.push('⚠️ No test files changed — consider adding tests.');
+            if (bigPR)                          insights.push(`⚠️ Large PR (${files.length} files) — consider splitting.`);
+            if (!hasDocs && files.length > 5)   insights.push('📝 No docs updated — consider updating README/docs.');
+
+            for (const f of files) {
+              if (f.patch && secretRe.test(f.patch)) {
+                insights.push(`🔒 Possible secret in \`${f.filename}\` — verify no credentials are committed.`);
+                break;
+              }
+            }
+
+            const summary = insights.length > 0
+              ? insights.join('\n')
+              : '✅ No issues detected by static analysis.';
+
+            core.setOutput('review', summary);
+
+      # Combine all agent outputs into one PR comment
+      - name: Post cascade review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const agent1 = `${{ steps.agent1.outputs.review }}`.trim();
+            const agent2 = `${{ steps.agent2.outputs.review }}`.trim();
+            const agent3 = `${{ steps.agent3.outputs.review }}`.trim();
+
+            const sections = [];
+            if (agent1) sections.push(`### 🤖 Agent 1 — GPT-4o-mini (code review)\n${agent1}`);
+            if (agent2) sections.push(`### 🔒 Agent 2 — Phi-3-mini (security)\n${agent2}`);
+            sections.push(`### 🔍 Agent 3 — Static analysis\n${agent3}`);
+
+            const body = [
+              '## 🚦 Copilot Cascade Review',
+              '',
+              sections.join('\n\n'),
+              '',
+              '*Free multi-agent review via GitHub Models API + GitHub Actions — $0 cost*'
+            ].join('\n');
+
+            // Update existing cascade comment or create a new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+
+            const existing = comments.find(c => c.body.includes('Copilot Cascade Review'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body
+              });
+            }
