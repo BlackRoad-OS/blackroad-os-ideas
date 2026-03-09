@@ -75,17 +75,15 @@ jobs:
             scanDirectory('.');
 
             if (findings.length > 0) {
-              const message = `🚨 **Security Alert: Potential Secrets Detected**
-
-${findings.map(f => `- **${f.type}** found in \`${f.file}\` (${f.count} occurrence${f.count > 1 ? 's' : ''})`).join('\n')}
-
-⚠️ **Action Required:**
-1. Verify if these are real secrets
-2. If yes, rotate credentials immediately
-3. Remove from git history
-4. Use environment variables instead
-
-cc: @${context.repo.owner}`;
+              const findingsList = findings.map(f => `- **${f.type}** found in \`${f.file}\` (${f.count} occurrence${f.count > 1 ? 's' : ''})`).join('\n');
+              const message = '🚨 **Security Alert: Potential Secrets Detected**\n\n' +
+                findingsList + '\n\n' +
+                '⚠️ **Action Required:**\n' +
+                '1. Verify if these are real secrets\n' +
+                '2. If yes, rotate credentials immediately\n' +
+                '3. Remove from git history\n' +
+                '4. Use environment variables instead\n\n' +
+                `cc: @${context.repo.owner}`;
 
               await github.rest.issues.create({
                 owner: context.repo.owner,

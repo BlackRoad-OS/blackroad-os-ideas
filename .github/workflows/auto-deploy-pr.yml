@@ -6,6 +6,10 @@ on:
   push:
     branches: [main, master, RAILWAY-DEPLOY-BRANCH]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -78,14 +78,12 @@ jobs:
                 repo: context.repo.repo,
                 pull_number: pr.number,
                 event: 'COMMENT',
-                body: `🤖 **Bot Review Notice:**
-
-⚠️ This PR has a short description. Please add:
-- What does this PR do?
-- Why is this change needed?
-- How was it tested?
-
-A detailed description helps reviewers understand your changes.`
+                body: '🤖 **Bot Review Notice:**\n\n' +
+                  '⚠️ This PR has a short description. Please add:\n' +
+                  '- What does this PR do?\n' +
+                  '- Why is this change needed?\n' +
+                  '- How was it tested?\n\n' +
+                  'A detailed description helps reviewers understand your changes.'
               });
             }
 
@@ -142,11 +140,7 @@ A detailed description helps reviewers understand your changes.`
                 repo: context.repo.repo,
                 pull_number: pr.number,
                 event: 'COMMENT',
-                body: `🤖 **Bot Code Review:**
-
-${insights.join('\n\n')}
-
-This is an automated review. A human will review your changes soon.`
+                body: '🤖 **Bot Code Review:**\n\n' + insights.join('\n\n') + '\n\nThis is an automated review. A human will review your changes soon.'
               });
             } else {
               await github.rest.pulls.createReview({
@@ -154,13 +148,11 @@ This is an automated review. A human will review your changes soon.`
                 repo: context.repo.repo,
                 pull_number: pr.number,
                 event: 'COMMENT',
-                body: `🤖 **Bot Code Review:**
-
-✅ No issues detected in automated review
-✅ Code changes look good
-✅ Ready for human review
-
-This is an automated review.`
+                body: '🤖 **Bot Code Review:**\n\n' +
+                  '✅ No issues detected in automated review\n' +
+                  '✅ Code changes look good\n' +
+                  '✅ Ready for human review\n\n' +
+                  'This is an automated review.'
               });
             }
 
