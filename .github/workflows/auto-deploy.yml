@@ -147,7 +147,7 @@ jobs:
       # ============ COMMENT ON PR ============
       - name: Comment Deployment URL on PR
         if: github.event_name == 'pull_request' && (steps.railway.outputs.success == 'true' || steps.cloudflare-pages.outputs.success == 'true' || steps.cloudflare-workers.outputs.success == 'true')
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const railwayUrl = '${{ steps.railway.outputs.url }}';

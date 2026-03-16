@@ -33,7 +33,7 @@ jobs:
           # Scopes needed: project, repo
 
       - name: Set initial status to Inbox
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.PROJECT_TOKEN }}
           script: |
@@ -45,7 +45,7 @@ jobs:
 
       - name: Add triage label if no labels
         if: github.event.issue.labels[0] == null
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.addLabels({
