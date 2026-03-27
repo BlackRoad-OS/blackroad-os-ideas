@@ -90,7 +90,7 @@ jobs:
 
       - name: Post agent response
         if: steps.check_mention.outputs.mentioned == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const response = `${{ steps.ai_response.outputs.response }}`;

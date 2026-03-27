@@ -23,7 +23,7 @@ jobs:
 
       - name: Gather PR context
         id: context
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -106,7 +106,7 @@ jobs:
       # Agent 3: Static analysis (always free, no API needed)
       - name: Agent 3 - Static analysis
         id: agent3
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -143,7 +143,7 @@ jobs:
 
       # Combine all agent outputs into one PR comment
       - name: Post cascade review
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const agent1 = `${{ steps.agent1.outputs.review }}`.trim();
